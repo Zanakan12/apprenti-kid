@@ -1,7 +1,9 @@
+// Générateur du client Prisma (à utiliser dans ton code TypeScript)
 generator client {
   provider = "prisma-client-js"
 }
 
+// Source de données SQLite (fichier local dev.db)
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
@@ -10,18 +12,22 @@ datasource db {
 model Enfant {
   id         Int             @id @default(autoincrement())
   nom        String
-  avatar     String?
+  avatar     String?         // emoji ou image
   points     Int             @default(0)
   createdAt  DateTime        @default(now())
-  progresses UserProgress[]
+  progresses UserProgress[]  // relation vers les progrès
 }
 
 model UserProgress {
   id        Int      @id @default(autoincrement())
-  enfant    Enfant   @relation(fields: [enfantId], references: [id])
   enfantId  Int
-  module    String
-  itemIndex Int
+  module    String    // ex: "lettres", "chiffres"
+  itemIndex Int       // position actuelle dans le module
   points    Int
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime  @updatedAt
+
+  enfant Enfant @relation(fields: [enfantId], references: [id])
+
+  // clé unique pour pouvoir faire un upsert par (enfantId, module)
+  @@unique([enfantId, module])
 }
