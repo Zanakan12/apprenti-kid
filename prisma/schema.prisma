@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Enfant {
+  id         Int             @id @default(autoincrement())
+  nom        String
+  avatar     String?
+  points     Int             @default(0)
+  createdAt  DateTime        @default(now())
+  progresses UserProgress[]
+}
+
+model UserProgress {
+  id        Int      @id @default(autoincrement())
+  enfant    Enfant   @relation(fields: [enfantId], references: [id])
+  enfantId  Int
+  module    String
+  itemIndex Int
+  points    Int
+  updatedAt DateTime @updatedAt
+}
